@@ -34,24 +34,18 @@ const sortModeSelect = document.getElementById("sort-mode");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const installBtn = document.getElementById("install-btn");
 const weeklySummaryEl = document.getElementById("task-weekly-summary");
-const advancedFieldsToggleBtn = document.getElementById(
-    "toggle-advanced-fields",
-);
-const advancedFieldsContainer = document.getElementById(
-    "advanced-task-options",
-);
-const advancedFiltersToggleBtn = document.getElementById(
-    "toggle-advanced-filters",
-);
-const advancedFiltersContainer = document.getElementById(
-    "advanced-filters-container",
-);
+const advancedFieldsToggleBtn = document.getElementById("toggle-advanced-fields");
+const advancedFieldsContainer = document.getElementById("advanced-task-options");
+const advancedFiltersToggleBtn = document.getElementById("toggle-advanced-filters");
+const advancedFiltersContainer = document.getElementById("advanced-filters-container");
+const advancedFiltersToggleContainer = document.querySelector(".advanced-filters-toggle-container");
 
 // Global Variables
 let activeTab = "schedule"; // or: no-time
 const taskTimers = {}; // store timeout IDs per task id
 let hasShownNotificationsPrompt = false; // to show notifications popup only once
 let deferredPrompt = null; // for PWA install
+let cachedTasks = []; // store tasks in memory for faster access
 
 // ============== Event Listeners ================
 // when click on tab buttons
@@ -420,6 +414,7 @@ async function updateUI() {
         showLoadingState();
 
         const allTasks = await getAllTasksFromDB();
+        cachedTasks = allTasks;
 
         // Ensure any tasks whose endTime has passed are marked as overdue in DB
         const now = new Date();
@@ -447,6 +442,11 @@ async function updateUI() {
         renderTasksInPage(tasksToRender);
         updateFilterBadges();
         updateWeeklySummary();
+        
+        // show advanced filters toggle button if there are tasks
+        if (cachedTasks.length > 0 && advancedFiltersToggleContainer) {
+            advancedFiltersToggleContainer.classList.remove('d-none');
+        }
     } catch (error) {
         showToast(
             "✗ Failed to fetch tasks. Please refresh the page.",
@@ -755,7 +755,12 @@ function updateFilterBadges() {
 function updateWeeklySummary() {
     if (!weeklySummaryEl) return;
     const count = getCompletedThisWeekCount();
-    weeklySummaryEl.textContent = `Tasks completed this week: ${count}`;
+    if (cachedTasks.length > 0) {
+        weeklySummaryEl.textContent = `Tasks completed this week: ${count}`;
+        weeklySummaryEl.classList.remove("d-none");
+    } else {
+        weeklySummaryEl.classList.add("d-none");
+    }
 }
 
 /* =================== Theme Handling =================== */
