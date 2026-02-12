@@ -37,8 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		if (isEnabled) {
 			const permission = await requestNotificationPermission();
 			if (!permission) {
-				e.target.removeAttribute("checked");
-				e.target.checked = false;
+				// Keep toggle checked so the checkbox doesn't "flash" back off on mobile.
+				// Notifications will only fire when permission is granted; tell the user.
+				window.dispatchEvent(new CustomEvent("notificationPermissionDenied"));
 			}
 		}
 	});

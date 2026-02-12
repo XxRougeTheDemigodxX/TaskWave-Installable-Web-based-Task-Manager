@@ -275,6 +275,15 @@ if ("serviceWorker" in navigator) {
     });
 }
 
+// when notification permission is denied (toggle stays on; notify user)
+window.addEventListener("notificationPermissionDenied", () => {
+    showToast(
+        "Notifications are blocked. Enable them in your browser or device settings to get reminders.",
+        "info",
+        5000,
+    );
+});
+
 /* ====================== Main Functions ===================== */
 // Switch Tabs
 function switchTabs(e, btn) {
