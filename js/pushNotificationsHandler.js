@@ -7,10 +7,9 @@ window.addEventListener("load", () => {
 
 
 // Push Notifications
+// Always ask the user for permission when called (e.g. when they click Enable Notifications)
 async function requestNotificationPermission() {
-	if (!("Notification" in window)) return;
-
-	if (Notification.permission === "granted") return;
+	if (!("Notification" in window)) return false;
 
 	const permission = await Notification.requestPermission();
 	if (permission === "granted") return true;
