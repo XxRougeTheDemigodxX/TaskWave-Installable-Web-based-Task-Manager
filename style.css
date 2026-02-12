@@ -135,6 +135,14 @@ main > .container {
 .advanced-fields-toggle .fa-angle-down.active {
     rotate: -180deg;
 }
+.time-placeholder {
+    width: fit-content;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-39%);
+    left: 13px;
+    color: var(--time-label-color);
+}
 
 /* Advanced fields toggle */
 .advanced-fields-toggle {
@@ -304,11 +312,6 @@ main > .container {
         line-height: 1.3;
         width: 100%;
         margin-top: 0.5rem;
-    }
-
-    /* Adjust wrapper layout on mobile */
-    .custom-list-item .wrapper {
-        flex-wrap: wrap;
     }
 
     .custom-list-item .wrapper .content {
