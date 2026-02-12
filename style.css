@@ -135,6 +135,17 @@ main > .container {
 .advanced-fields-toggle .fa-angle-down.active {
     rotate: -180deg;
 }
+#task-time {
+    position: relative;
+}
+#task-time::placeholder {
+    content: "mm/dd/yyyy - --:--:--";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-39%);
+    left: 13px;
+    color: var(--time-label-color);
+}
 .time-placeholder {
     width: fit-content;
     position: absolute;
