@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// Save preference to localStorage
 		localStorage.setItem("notificationsEnabled", isEnabled ? "true" : "false");
+		document.querySelector("form-switch").innerText += isEnabled ? "Notifications Enabled" : "Notifications Disabled";
 
 		// When user turns notifications ON, request permission
 		if (isEnabled) {
