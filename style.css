@@ -235,6 +235,61 @@ main > .container {
     border-inline: none;
 }
 
+.tasks-filters-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Advanced filters toggle */
+.advanced-filters-toggle {
+    font-size: 0.9rem;
+    color: var(--time-label-color);
+    text-decoration: none;
+}
+
+.advanced-filters-toggle:hover,
+.advanced-filters-toggle:focus-visible {
+    color: var(--primary-color);
+}
+
+.advanced-filters-toggle .fa-angle-down {
+    transition: transform 0.3s ease;
+}
+
+.advanced-filters-toggle .fa-angle-down.active {
+    transform: rotate(180deg);
+}
+
+.tasks-advanced-filters {
+    font-size: 0.85rem;
+    max-height: 0;
+    /* overflow: hidden; */
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+        max-height 0.25s ease,
+        opacity 0.2s ease,
+        transform 0.25s ease;
+}
+
+.tasks-advanced-filters--open {
+    max-height: 200px; /* enough to show the filter controls */
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0.5rem;
+}
+
+.tasks-advanced-filters .form-label-sm {
+    font-size: 0.8rem;
+    color: var(--time-label-color);
+}
+
+.tasks-advanced-filters .form-control-sm,
+.tasks-advanced-filters .form-select-sm {
+    padding-block: 0.25rem;
+}
+
 @media (max-width: 576px) {
     .tasks-filters {
         justify-content: flex-start !important;
@@ -363,6 +418,7 @@ main > .container {
 /* ========= Task Meta (Priority + Tags) ========= */
 .task-meta {
     font-size: 0.8rem;
+    font-size: clamp(0.75rem, 1.5vw, 1rem);
 }
 
 .task-priority-badge {

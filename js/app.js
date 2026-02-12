@@ -28,6 +28,9 @@ const form = document.getElementById("tasks-form");
 const toastsContainer = document.getElementById("notifications-container");
 const tasksContainer = document.querySelector(".list-group");
 const filterButtons = document.querySelectorAll(".tasks-filters [data-filter]");
+const priorityFilterSelect = document.getElementById("filter-priority");
+const tagFilterInput = document.getElementById("filter-tag");
+const sortModeSelect = document.getElementById("sort-mode");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const installBtn = document.getElementById("install-btn");
 const weeklySummaryEl = document.getElementById("task-weekly-summary");
@@ -36,6 +39,12 @@ const advancedFieldsToggleBtn = document.getElementById(
 );
 const advancedFieldsContainer = document.getElementById(
     "advanced-task-options",
+);
+const advancedFiltersToggleBtn = document.getElementById(
+    "toggle-advanced-filters",
+);
+const advancedFiltersContainer = document.getElementById(
+    "advanced-filters-container",
 );
 
 // Global Variables
@@ -97,11 +106,48 @@ if (advancedFieldsToggleBtn && advancedFieldsContainer) {
     });
 }
 
-// initialize filters module for filter buttons
-initFilters(filterButtons, () => {
-    const tasksToRender = getFilteredTasks();
-    renderTasksInPage(tasksToRender);
-});
+// toggle advanced filters visibility
+if (advancedFiltersToggleBtn && advancedFiltersContainer) {
+    // start collapsed
+    advancedFiltersContainer.classList.remove(
+        "tasks-advanced-filters--open",
+    );
+    advancedFiltersToggleBtn.setAttribute("aria-expanded", "false");
+
+    advancedFiltersToggleBtn.addEventListener("click", () => {
+        const isOpen = advancedFiltersContainer.classList.contains(
+            "tasks-advanced-filters--open",
+        );
+
+        advancedFiltersContainer.classList.toggle(
+            "tasks-advanced-filters--open",
+            !isOpen,
+        );
+
+        advancedFiltersToggleBtn.setAttribute(
+            "aria-expanded",
+            !isOpen ? "true" : "false",
+        );
+        document.querySelector(".advanced-filters-toggle-text").textContent = !isOpen
+            ? "Hide advanced filters"
+            : "Show advanced filters";
+        document.querySelector("#toggle-advanced-filters i").classList.toggle("active", !isOpen);
+    });
+}
+
+// initialize filters module for filter buttons and advanced filters
+initFilters(
+    filterButtons,
+    () => {
+        const tasksToRender = getFilteredTasks();
+        renderTasksInPage(tasksToRender);
+    },
+    {
+        prioritySelect: priorityFilterSelect,
+        tagInput: tagFilterInput,
+        sortSelect: sortModeSelect,
+    },
+);
 
 // theme toggle button
 if (themeToggleBtn) {

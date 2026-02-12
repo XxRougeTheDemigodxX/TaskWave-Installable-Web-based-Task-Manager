@@ -2,9 +2,12 @@
 
 let currentFilter = "all";
 let cachedTasks = [];
+let priorityFilter = "all"; // all, high, medium, low
+let tagFilter = ""; // free-text, matches tag labels
+let sortMode = "default"; // default, priority
 
-// Initialize filter buttons with click handlers
-export function initFilters(filterButtons, onFilterChange) {
+// Initialize filter buttons and optional extra filter controls
+export function initFilters(filterButtons, onFilterChange, extraControls = {}) {
     if (!filterButtons || typeof filterButtons.forEach !== "function") return;
 
     filterButtons.forEach((btn) => {
@@ -30,6 +33,37 @@ export function initFilters(filterButtons, onFilterChange) {
             }
         });
     });
+
+    const { prioritySelect, tagInput, sortSelect } = extraControls || {};
+
+    if (prioritySelect) {
+        prioritySelect.addEventListener("change", () => {
+            const value = (prioritySelect.value || "all").toLowerCase();
+            priorityFilter = value;
+            if (typeof onFilterChange === "function") {
+                onFilterChange();
+            }
+        });
+    }
+
+    if (tagInput) {
+        tagInput.addEventListener("input", () => {
+            tagFilter = (tagInput.value || "").trim().toLowerCase();
+            if (typeof onFilterChange === "function") {
+                onFilterChange();
+            }
+        });
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            const value = sortSelect.value || "default";
+            sortMode = value;
+            if (typeof onFilterChange === "function") {
+                onFilterChange();
+            }
+        });
+    }
 }
 
 // Update cached tasks list
@@ -37,17 +71,74 @@ export function setTasks(tasks) {
     cachedTasks = Array.isArray(tasks) ? tasks : [];
 }
 
-// Get tasks filtered by current filter
+// Get tasks filtered by current filter / priority / tag, and sorted if needed
 export function getFilteredTasks() {
     if (!Array.isArray(cachedTasks)) return [];
 
-    if (currentFilter === "all") {
-        return cachedTasks;
+    let tasks = cachedTasks.slice();
+
+    // status filter
+    if (currentFilter !== "all") {
+        tasks = tasks.filter(
+            (task) => task && task.status === currentFilter,
+        );
     }
 
-    return cachedTasks.filter(
-        (task) => task && task.status === currentFilter,
-    );
+    // priority filter
+    if (priorityFilter !== "all") {
+        tasks = tasks.filter((task) => {
+            if (!task || !task.priority) return false;
+            const value =
+                typeof task.priority === "string"
+                    ? task.priority.toLowerCase()
+                    : String(task.priority).toLowerCase();
+            return value === priorityFilter;
+        });
+    }
+
+    // tag filter (free text, matches any tag containing the text)
+    if (tagFilter) {
+        tasks = tasks.filter((task) => {
+            if (!task || !Array.isArray(task.tags) || task.tags.length === 0)
+                return false;
+            return task.tags.some((tag) => {
+                if (typeof tag !== "string") return false;
+                return tag.toLowerCase().includes(tagFilter);
+            });
+        });
+    }
+
+    // sorting
+    if (sortMode === "priority") {
+        const priorityRank = {
+            high: 0,
+            medium: 1,
+            low: 2,
+        };
+
+        tasks.sort((a, b) => {
+            const aVal = a && typeof a.priority === "string"
+                ? a.priority.toLowerCase()
+                : "";
+            const bVal = b && typeof b.priority === "string"
+                ? b.priority.toLowerCase()
+                : "";
+
+            const aRank = priorityRank.hasOwnProperty(aVal)
+                ? priorityRank[aVal]
+                : 3;
+            const bRank = priorityRank.hasOwnProperty(bVal)
+                ? priorityRank[bVal]
+                : 3;
+
+            if (aRank !== bRank) return aRank - bRank;
+
+            // tie-breaker: keep original order by not changing when ranks equal
+            return 0;
+        });
+    }
+
+    return tasks;
 }
 
 

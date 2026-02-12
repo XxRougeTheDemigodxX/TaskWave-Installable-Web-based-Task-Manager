@@ -328,63 +328,125 @@
                 </h2>
 
                 <!-- Tasks Filters -->
-                <div
-                    class="tasks-filters btn-group d-flex justify-content-center"
-                    role="group"
-                    aria-label="Filter tasks"
-                >
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary active"
-                        data-filter="all"
+                <div class="tasks-filters-wrapper">
+                    <div
+                        class="tasks-filters btn-group d-flex justify-content-center"
+                        role="group"
+                        aria-label="Filter tasks"
                     >
-                        <span class="filter-text">All</span>    
-                        <span 
-                            class="badge text-bg-secondary filter-badge"
-                            data-status="all"
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary active"
+                            data-filter="all"
                         >
-                            0
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-filter="pending"
-                    >
-                        <span class="filter-text">Pending</span>
-                        <span 
-                            class="badge text-bg-primary filter-badge"
-                            data-status="pending"
+                            <span class="filter-text">All</span>
+                            <span
+                                class="badge text-bg-secondary filter-badge"
+                                data-status="all"
+                            >
+                                0
+                            </span>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            data-filter="pending"
                         >
-                            0
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-filter="completed"
-                    >
-                        <span class="filter-text">Completed</span>
-                        <span 
-                            class="badge text-bg-success filter-badge"
-                            data-status="completed"
+                            <span class="filter-text">Pending</span>
+                            <span
+                                class="badge text-bg-primary filter-badge"
+                                data-status="pending"
+                            >
+                                0
+                            </span>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            data-filter="completed"
                         >
-                            0
-                        </span>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-filter="overdue"
-                    >
-                        <span class="filter-text">Overdue</span>
-                        <span
-                            class="badge rounded-pill text-bg-danger ms-1 filter-badge"
-                            data-status="overdue"
+                            <span class="filter-text">Completed</span>
+                            <span
+                                class="badge text-bg-success filter-badge"
+                                data-status="completed"
+                            >
+                                0
+                            </span>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            data-filter="overdue"
                         >
-                            0
-                        </span>
-                    </button>
+                            <span class="filter-text">Overdue</span>
+                            <span
+                                class="badge rounded-pill text-bg-danger ms-1 filter-badge"
+                                data-status="overdue"
+                            >
+                                0
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Advanced filters toggle -->
+                    <div class="text-center mt-2">
+                        <button
+                            type="button"
+                            id="toggle-advanced-filters"
+                            class="btn btn-link p-0 small advanced-filters-toggle d-flex align-items-center gap-1 mx-auto"
+                            aria-expanded="false"
+                        >
+                            <span class="advanced-filters-toggle-text">Show advanced filters</span>
+                            <i class="fa-solid fa-angle-down trans-3"></i>
+                        </button>
+                    </div>
+
+                    <!-- Advanced list filters: priority, tag, sort -->
+                    <div id="advanced-filters-container" class="tasks-advanced-filters row g-2 align-items-center mt-2">
+                        <div class="col-12 col-md-4">
+                            <label
+                                for="filter-priority"
+                                class="form-label form-label-sm mb-1"
+                                >Priority</label
+                            >
+                            <select
+                                id="filter-priority"
+                                class="form-select form-select-sm"
+                            >
+                                <option value="all" selected>All priorities</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label
+                                for="filter-tag"
+                                class="form-label form-label-sm mb-1"
+                                >Tag</label
+                            >
+                            <input
+                                type="text"
+                                id="filter-tag"
+                                class="form-control form-control-sm"
+                                placeholder="e.g. Work"
+                            />
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label
+                                for="sort-mode"
+                                class="form-label form-label-sm mb-1"
+                                >Sort by</label
+                            >
+                            <select
+                                id="sort-mode"
+                                class="form-select form-select-sm"
+                            >
+                                <option value="default" selected>Default order</option>
+                                <option value="priority">Priority (High → Low)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Weekly completed indicator -->
