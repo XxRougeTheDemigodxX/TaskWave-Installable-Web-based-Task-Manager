@@ -1106,12 +1106,52 @@ function showTaskLists(tasks) {
 function formatDateTime(dateTime) {
     if (!dateTime) return "";
 
-    const date = new Date(dateTime);
-    return date.toLocaleString(undefined, {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-    });
+    try {
+        const date = new Date(dateTime);
+        if (isNaN(date.getTime())) return "";
+
+        const now = new Date();
+        const isToday = date.toDateString() === now.toDateString();
+        const isThisYear = date.getFullYear() === now.getFullYear();
+
+        // Check if mobile screen
+        const isMobile = window.innerWidth <= 576;
+
+        if (isMobile) {
+            // Compact format for mobile: "Today 2:30 PM" or "Jan 15, 2:30 PM"
+            if (isToday) {
+                return `Today ${date.toLocaleTimeString(undefined, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                })}`;
+            } else if (isThisYear) {
+                return date.toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            } else {
+                return date.toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            }
+        } else {
+            // Full format for desktop
+            return date.toLocaleString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit",
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            });
+        }
+    } catch (error) {
+        console.error("Error formatting datetime:", error);
+        return "";
+    }
 }
