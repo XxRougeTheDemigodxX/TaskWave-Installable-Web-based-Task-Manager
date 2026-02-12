@@ -31,6 +31,12 @@ const filterButtons = document.querySelectorAll(".tasks-filters [data-filter]");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const installBtn = document.getElementById("install-btn");
 const weeklySummaryEl = document.getElementById("task-weekly-summary");
+const advancedFieldsToggleBtn = document.getElementById(
+    "toggle-advanced-fields",
+);
+const advancedFieldsContainer = document.getElementById(
+    "advanced-task-options",
+);
 
 // Global Variables
 let activeTab = "schedule"; // or: no-time
@@ -61,6 +67,35 @@ dateTimeField.addEventListener("change", (e) => {
 
 // when submit the form
 submitFormBtn.addEventListener("click", submitForm);
+
+// toggle advanced (optional) fields visibility
+if (advancedFieldsToggleBtn && advancedFieldsContainer) {
+    // start collapsed
+    advancedFieldsContainer.classList.remove(
+        "advanced-task-options--open",
+    );
+    advancedFieldsToggleBtn.setAttribute("aria-expanded", "false");
+
+    advancedFieldsToggleBtn.addEventListener("click", () => {
+        const isOpen = advancedFieldsContainer.classList.contains(
+            "advanced-task-options--open",
+        );
+
+        advancedFieldsContainer.classList.toggle(
+            "advanced-task-options--open",
+            !isOpen,
+        );
+
+        advancedFieldsToggleBtn.setAttribute(
+            "aria-expanded",
+            !isOpen ? "true" : "false",
+        );
+        document.querySelector(".advanced-fields-toggle-text").textContent = !isOpen
+            ? "Hide additional options"
+            : "Show additional options";
+        document.querySelector(".advanced-fields-toggle i").classList.toggle("active", !isOpen);
+    });
+}
 
 // initialize filters module for filter buttons
 initFilters(filterButtons, () => {
@@ -377,6 +412,15 @@ async function submitForm(e) {
     const taskTitle = formData.get("task-title").trim();
     const taskTime = formData.get("task-time");
     const taskDescription = formData.get("task-description").trim();
+    const taskPriority = (formData.get("task-priority") || "Medium").trim();
+    const rawTags = (formData.get("task-tags") || "").trim();
+    const tags =
+        rawTags.length > 0
+            ? rawTags
+                  .split(",")
+                  .map((tag) => tag.trim())
+                  .filter((tag) => tag.length > 0)
+            : [];
     // validate form data
     if (!checkInputValidity(taskTitle, taskTime, taskDescription)) return;
 
@@ -387,6 +431,8 @@ async function submitForm(e) {
         description: taskDescription,
         endTime: taskTime,
         status: "pending", // pending, completed, overdue
+        priority: taskPriority || "Medium",
+        tags,
     };
 
     // store form data in IndexedDB
@@ -825,11 +871,63 @@ function showTaskLists(tasks) {
         const title = document.createElement("h4");
         title.textContent = task.title ?? "";
 
+        // Priority + tags meta row
+        const meta = document.createElement("div");
+        meta.classList.add("task-meta", "d-flex", "flex-wrap", "gap-2", "mt-1");
+
+        if (task.priority) {
+            const priorityBadge = document.createElement("span");
+            priorityBadge.classList.add(
+                "badge",
+                "rounded-pill",
+                "task-priority-badge",
+            );
+
+            const normalizedPriority =
+                typeof task.priority === "string"
+                    ? task.priority.toLowerCase()
+                    : "";
+
+            if (normalizedPriority === "high") {
+                priorityBadge.classList.add("task-priority-high");
+                priorityBadge.textContent = "High priority";
+            } else if (normalizedPriority === "low") {
+                priorityBadge.classList.add("task-priority-low");
+                priorityBadge.textContent = "Low priority";
+            } else {
+                priorityBadge.classList.add("task-priority-medium");
+                priorityBadge.textContent = "Medium priority";
+            }
+
+            meta.appendChild(priorityBadge);
+        }
+
+        if (Array.isArray(task.tags) && task.tags.length > 0) {
+            task.tags.forEach((tag) => {
+                const cleanTag =
+                    typeof tag === "string" ? tag.trim() : String(tag);
+                if (!cleanTag) return;
+
+                const tagBadge = document.createElement("span");
+                tagBadge.classList.add(
+                    "badge",
+                    "rounded-pill",
+                    "task-tag-badge",
+                );
+                tagBadge.textContent = cleanTag;
+                meta.appendChild(tagBadge);
+            });
+        }
+
         const description = document.createElement("p");
         description.classList.add("text-secondary", "my-3");
         description.textContent = task.description ?? "";
 
-        content.append(title, description);
+        if (meta.children.length > 0) {
+            content.append(title, meta, description);
+        } else {
+            content.append(title, description);
+        }
 
         // Actions
         const actions = document.createElement("div");

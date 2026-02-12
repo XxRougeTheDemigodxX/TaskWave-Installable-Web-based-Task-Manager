@@ -7,15 +7,14 @@ window.addEventListener("load", () => {
 
 
 // Push Notifications
-function requestNotificationPermission() {
+async function requestNotificationPermission() {
 	if (!("Notification" in window)) return;
 
 	if (Notification.permission === "granted") return;
 
-	Notification.requestPermission().then(permission => {
-		if (permission === "granted") {
-		}
-	});
+	const permission = await Notification.requestPermission();
+	if (permission === "granted") return true;
+	return false;
 }
 
 // Notification Toggler in UI
@@ -29,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		toggle.checked = true;
 	}
 
-	toggle.addEventListener("change", (e) => {
+	toggle.addEventListener("change", async (e) => {
 		const isEnabled = e.target.checked;
 
 		// Save preference to localStorage
@@ -37,7 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// When user turns notifications ON, request permission
 		if (isEnabled) {
-			requestNotificationPermission();
+			const permission = await requestNotificationPermission();
+			if (!permission) {
+				e.target.removeAttribute("checked");
+				e.target.checked = false;
+			}
 		}
 	});
 });

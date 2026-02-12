@@ -67,7 +67,6 @@ Designed for both desktop and mobile, TaskWave delivers a smooth, reliable, app-
 ## 📁 Project Structure
 
 ```text
-.
 ├─ index.html            # Main entry: form, task list, install/theme controls
 ├─ style.css             # Global styles, theming, responsive layout, animations
 ├─ manifest.json         # PWA manifest: name, icons, display mode, colors
