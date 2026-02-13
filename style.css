@@ -392,10 +392,19 @@ main > .container {
 }
 
 /* Drag-and-drop reorder */
+.wrapper {
+    position: relative;
+}
+.wrapper .content {
+    margin-inline-start: 7px;
+}
 .task-drag-handle {
     cursor: grab;
     align-self: center;
     padding: 0.25rem;
+    position: absolute;
+    left: -18px;
+    top: -12px;
 }
 .task-drag-handle:active {
     cursor: grabbing;
@@ -487,7 +496,7 @@ main > .container {
 /* ========= Task Meta (Priority + Tags) ========= */
 .task-meta {
     font-size: 0.8rem;
-    font-size: clamp(0.75rem, 1.5vw, 1rem);
+    font-size: clamp(0.87rem, 1.5vw, 1rem);
 }
 
 .task-priority-badge {
