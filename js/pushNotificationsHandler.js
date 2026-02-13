@@ -16,28 +16,58 @@ async function requestNotificationPermission() {
 	return false;
 }
 
+// Sync checkbox and localStorage with actual browser permission (e.g. after user revokes in settings)
+function syncNotificationToggleWithPermission() {
+	if (!("Notification" in window)) return;
+	const toggle = document.getElementById("switchCheckChecked");
+	if (!toggle) return;
+	if (Notification.permission !== "granted") {
+		toggle.checked = false;
+		localStorage.setItem("notificationsEnabled", "false");
+	}
+}
+
 // Notification Toggler in UI
 document.addEventListener("DOMContentLoaded", () => {
 	const toggle = document.getElementById("switchCheckChecked");
 	if (!toggle) return;
 
-	// Load saved notification preference from localStorage
+	// Load saved preference, but keep checkbox in sync with actual browser permission
 	const savedPreference = localStorage.getItem("notificationsEnabled");
-	if (savedPreference === "true") {
+	if (savedPreference === "true" && ("Notification" in window) && Notification.permission === "granted") {
 		toggle.checked = true;
+	} else {
+		toggle.checked = false;
+		if (savedPreference === "true") localStorage.setItem("notificationsEnabled", "false");
 	}
+
+	// When user returns to the tab, re-sync in case they revoked permission in browser settings
+	document.addEventListener("visibilitychange", () => {
+		if (document.visibilityState === "visible") syncNotificationToggleWithPermission();
+	});
+	window.addEventListener("focus", syncNotificationToggleWithPermission);
 
 	toggle.addEventListener("change", async (e) => {
 		const isEnabled = e.target.checked;
 
 		// Save preference to localStorage
 		localStorage.setItem("notificationsEnabled", isEnabled ? "true" : "false");
-		// When user turns notifications ON, request permission
+		// When user turns notifications ON: ensure permission is granted or ask for it
 		if (isEnabled) {
-			const permission = await requestNotificationPermission();
-			if (!permission) {
-				// Keep toggle checked so the checkbox doesn't "flash" back off on mobile.
-				// Notifications will only fire when permission is granted; tell the user.
+			if (!("Notification" in window)) {
+				window.dispatchEvent(new CustomEvent("notificationPermissionDenied"));
+				return;
+			}
+			// Already permitted: no need to ask again, just confirm
+			if (Notification.permission === "granted") {
+				window.dispatchEvent(new CustomEvent("notificationPermissionGranted"));
+				return;
+			}
+			// Not yet permitted: ask for permission
+			const granted = await requestNotificationPermission();
+			if (granted) {
+				window.dispatchEvent(new CustomEvent("notificationPermissionGranted"));
+			} else {
 				window.dispatchEvent(new CustomEvent("notificationPermissionDenied"));
 			}
 		}

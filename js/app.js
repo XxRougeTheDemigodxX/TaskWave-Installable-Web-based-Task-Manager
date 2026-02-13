@@ -317,6 +317,10 @@ window.addEventListener("notificationPermissionDenied", () => {
     );
 });
 
+window.addEventListener("notificationPermissionGranted", () => {
+    showToast("✓ Notifications enabled. You'll get reminders for overdue tasks.", "success", 3500);
+});
+
 /* ====================== Main Functions ===================== */
 // Switch Tabs
 function switchTabs(e, btn) {
