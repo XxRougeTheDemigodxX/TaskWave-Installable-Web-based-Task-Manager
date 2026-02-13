@@ -71,11 +71,19 @@ export function setTasks(tasks) {
     cachedTasks = Array.isArray(tasks) ? tasks : [];
 }
 
+// Get all cached tasks in display order (by order field)
+export function getOrderedCachedTasks() {
+    if (!Array.isArray(cachedTasks)) return [];
+    return [...cachedTasks].sort(
+        (a, b) => (a.order ?? 999999) - (b.order ?? 999999),
+    );
+}
+
 // Get tasks filtered by current filter / priority / tag, and sorted if needed
 export function getFilteredTasks() {
     if (!Array.isArray(cachedTasks)) return [];
 
-    let tasks = cachedTasks.slice();
+    let tasks = getOrderedCachedTasks();
 
     // status filter
     if (currentFilter !== "all") {
@@ -133,8 +141,8 @@ export function getFilteredTasks() {
 
             if (aRank !== bRank) return aRank - bRank;
 
-            // tie-breaker: keep original order by not changing when ranks equal
-            return 0;
+            // tie-breaker: preserve manual order
+            return (a.order ?? 999999) - (b.order ?? 999999);
         });
     }
 

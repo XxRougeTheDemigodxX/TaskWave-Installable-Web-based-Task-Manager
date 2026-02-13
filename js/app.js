@@ -9,6 +9,7 @@ import {
     initFilters,
     setTasks,
     getFilteredTasks,
+    getOrderedCachedTasks,
     getCurrentFilter,
     getTaskCounts,
     getCompletedThisWeekCount,
@@ -34,11 +35,21 @@ const sortModeSelect = document.getElementById("sort-mode");
 const themeToggleBtn = document.getElementById("theme-toggle");
 const installBtn = document.getElementById("install-btn");
 const weeklySummaryEl = document.getElementById("task-weekly-summary");
-const advancedFieldsToggleBtn = document.getElementById("toggle-advanced-fields");
-const advancedFieldsContainer = document.getElementById("advanced-task-options");
-const advancedFiltersToggleBtn = document.getElementById("toggle-advanced-filters");
-const advancedFiltersContainer = document.getElementById("advanced-filters-container");
-const advancedFiltersToggleContainer = document.querySelector(".advanced-filters-toggle-container");
+const advancedFieldsToggleBtn = document.getElementById(
+    "toggle-advanced-fields",
+);
+const advancedFieldsContainer = document.getElementById(
+    "advanced-task-options",
+);
+const advancedFiltersToggleBtn = document.getElementById(
+    "toggle-advanced-filters",
+);
+const advancedFiltersContainer = document.getElementById(
+    "advanced-filters-container",
+);
+const advancedFiltersToggleContainer = document.querySelector(
+    ".advanced-filters-toggle-container",
+);
 
 // Global Variables
 let activeTab = "schedule"; // or: no-time
@@ -74,9 +85,7 @@ submitFormBtn.addEventListener("click", submitForm);
 // toggle advanced (optional) fields visibility
 if (advancedFieldsToggleBtn && advancedFieldsContainer) {
     // start collapsed
-    advancedFieldsContainer.classList.remove(
-        "advanced-task-options--open",
-    );
+    advancedFieldsContainer.classList.remove("advanced-task-options--open");
     advancedFieldsToggleBtn.setAttribute("aria-expanded", "false");
 
     advancedFieldsToggleBtn.addEventListener("click", () => {
@@ -93,19 +102,18 @@ if (advancedFieldsToggleBtn && advancedFieldsContainer) {
             "aria-expanded",
             !isOpen ? "true" : "false",
         );
-        document.querySelector(".advanced-fields-toggle-text").textContent = !isOpen
-            ? "Hide additional options"
-            : "Show additional options";
-        document.querySelector(".advanced-fields-toggle i").classList.toggle("active", !isOpen);
+        document.querySelector(".advanced-fields-toggle-text").textContent =
+            !isOpen ? "Hide additional options" : "Show additional options";
+        document
+            .querySelector(".advanced-fields-toggle i")
+            .classList.toggle("active", !isOpen);
     });
 }
 
 // toggle advanced filters visibility
 if (advancedFiltersToggleBtn && advancedFiltersContainer) {
     // start collapsed
-    advancedFiltersContainer.classList.remove(
-        "tasks-advanced-filters--open",
-    );
+    advancedFiltersContainer.classList.remove("tasks-advanced-filters--open");
     advancedFiltersToggleBtn.setAttribute("aria-expanded", "false");
 
     advancedFiltersToggleBtn.addEventListener("click", () => {
@@ -122,11 +130,42 @@ if (advancedFiltersToggleBtn && advancedFiltersContainer) {
             "aria-expanded",
             !isOpen ? "true" : "false",
         );
-        document.querySelector(".advanced-filters-toggle-text").textContent = !isOpen
-            ? "Hide advanced filters"
-            : "Show advanced filters";
-        document.querySelector("#toggle-advanced-filters i").classList.toggle("active", !isOpen);
+        document.querySelector(".advanced-filters-toggle-text").textContent =
+            !isOpen ? "Hide advanced filters" : "Show advanced filters";
+        document
+            .querySelector("#toggle-advanced-filters i")
+            .classList.toggle("active", !isOpen);
     });
+}
+
+// Reorder tasks: move task with sourceId before task with targetId, persist order to IndexedDB
+async function reorderTasks(sourceId, targetId) {
+    if (!sourceId || !targetId || sourceId === targetId) return;
+    const ordered = getOrderedCachedTasks();
+    const sourceIndex = ordered.findIndex((t) => t && t.id === sourceId);
+    const targetIndex = ordered.findIndex((t) => t && t.id === targetId);
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const [moved] = ordered.splice(sourceIndex, 1);
+    ordered.splice(targetIndex, 0, moved);
+    ordered.forEach((task, i) => {
+        if (task) task.order = i;
+    });
+
+    try {
+        await Promise.all(
+            ordered.map((task) => updateTask(task, task.id)),
+        );
+        setTasks(ordered);
+        cachedTasks = ordered;
+        const tasksToRender = getFilteredTasks();
+        renderTasksInPage(tasksToRender);
+        updateFilterBadges();
+        updateWeeklySummary();
+        showToast("✓ Task order updated", "success", 2000);
+    } catch (err) {
+        showToast("✗ Could not save order. Please try again.", "error", 3000);
+    }
 }
 
 // initialize filters module for filter buttons and advanced filters
@@ -376,10 +415,7 @@ async function markTaskCompleted(id, iconEl) {
 
         const icon = iconEl.querySelector("i");
         if (icon) {
-            icon.classList.toggle(
-                "fa-circle-check",
-                newStatus === "completed",
-            );
+            icon.classList.toggle("fa-circle-check", newStatus === "completed");
             icon.classList.toggle("fa-circle", newStatus !== "completed");
             icon.classList.toggle("text-success", newStatus === "completed");
         }
@@ -407,13 +443,25 @@ async function markTaskCompleted(id, iconEl) {
     }
 }
 
+// Ensure every task has an order; sort by order (tasks without order go to end)
+function normalizeTaskOrder(tasks) {
+    if (!Array.isArray(tasks) || tasks.length === 0) return;
+    const sorted = [...tasks].sort(
+        (a, b) => (a.order ?? Infinity) - (b.order ?? Infinity),
+    );
+    sorted.forEach((task, i) => {
+        if (task) task.order = i;
+    });
+}
+
 // Update Tasks Container
 async function updateUI() {
     try {
         // show loading state while fetching from IndexedDB
         showLoadingState();
 
-        const allTasks = await getAllTasksFromDB();
+        let allTasks = await getAllTasksFromDB();
+        normalizeTaskOrder(allTasks);
         cachedTasks = allTasks;
 
         // Ensure any tasks whose endTime has passed are marked as overdue in DB
@@ -442,10 +490,10 @@ async function updateUI() {
         renderTasksInPage(tasksToRender);
         updateFilterBadges();
         updateWeeklySummary();
-        
+
         // show advanced filters toggle button if there are tasks
         if (cachedTasks.length > 0 && advancedFiltersToggleContainer) {
-            advancedFiltersToggleContainer.classList.remove('d-none');
+            advancedFiltersToggleContainer.classList.remove("d-none");
         }
     } catch (error) {
         showToast(
@@ -479,7 +527,7 @@ async function submitForm(e) {
     // validate form data
     if (!checkInputValidity(taskTitle, taskTime, taskDescription)) return;
 
-    // create task object
+    // create task object (order = append at end)
     const task = {
         id: `${taskTitle} - ${Date.now()} - ${Math.random()}`, // generate unique id for each task
         title: taskTitle,
@@ -488,6 +536,7 @@ async function submitForm(e) {
         status: "pending", // pending, completed, overdue
         priority: taskPriority || "Medium",
         tags,
+        order: getOrderedCachedTasks().length,
     };
 
     // store form data in IndexedDB
@@ -924,6 +973,26 @@ function showTaskLists(tasks) {
             "justify-content-between",
         );
 
+        // Drag handle (only this starts drag to avoid conflicting with buttons)
+        const dragHandle = document.createElement("span");
+        dragHandle.classList.add("task-drag-handle", "icon-btn");
+        dragHandle.setAttribute("draggable", "true");
+        dragHandle.setAttribute("aria-label", "Drag to reorder");
+        dragHandle.setAttribute("title", "Drag to reorder");
+        const gripIcon = document.createElement("i");
+        gripIcon.classList.add("fa-solid", "fa-grip-vertical", "text-muted");
+        dragHandle.appendChild(gripIcon);
+        dragHandle.addEventListener("dragstart", (e) => {
+            e.stopPropagation();
+            e.dataTransfer.setData("text/plain", task.id);
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setDragImage(li, 0, 0);
+            li.classList.add("task-dragging");
+        });
+        dragHandle.addEventListener("dragend", () => {
+            li.classList.remove("task-dragging");
+        });
+
         // Content
         const content = document.createElement("div");
         content.classList.add("content");
@@ -1031,10 +1100,7 @@ function showTaskLists(tasks) {
         deleteBtn.type = "button";
         deleteBtn.classList.add("icon-btn", "task-delete-btn");
         deleteBtn.setAttribute("data-id", task.id);
-        deleteBtn.setAttribute(
-            "aria-label",
-            `Delete task "${task.title}"`,
-        );
+        deleteBtn.setAttribute("aria-label", `Delete task "${task.title}"`);
 
         const deleteIcon = document.createElement("i");
         deleteIcon.classList.add(
@@ -1070,6 +1136,7 @@ function showTaskLists(tasks) {
             actions.append(completeBtn);
         }
         actions.append(deleteBtn, toggleBtn);
+        wrapper.prepend(dragHandle);
         wrapper.append(content, actions);
 
         // Time / status
@@ -1110,6 +1177,26 @@ function showTaskLists(tasks) {
         }
 
         li.append(wrapper, timeSpan);
+
+        // Drag-and-drop: allow dropping on this item to reorder
+        li.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            if (!li.classList.contains("task-dragging")) {
+                li.classList.add("task-drag-over");
+            }
+        });
+        li.addEventListener("dragleave", () => {
+            li.classList.remove("task-drag-over");
+        });
+        li.addEventListener("drop", (e) => {
+            e.preventDefault();
+            li.classList.remove("task-drag-over");
+            const sourceId = e.dataTransfer.getData("text/plain");
+            if (!sourceId || sourceId === task.id) return;
+            reorderTasks(sourceId, task.id);
+        });
+
         fragment.appendChild(li);
     });
 

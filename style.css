@@ -391,6 +391,23 @@ main > .container {
     }
 }
 
+/* Drag-and-drop reorder */
+.task-drag-handle {
+    cursor: grab;
+    align-self: center;
+    padding: 0.25rem;
+}
+.task-drag-handle:active {
+    cursor: grabbing;
+}
+.custom-list-item.task-dragging {
+    opacity: 0.6;
+}
+.custom-list-item.task-drag-over {
+    outline: 2px dashed var(--primary-color);
+    outline-offset: 2px;
+}
+
 .custom-list-item.task-overdue h4 {
     text-decoration: line-through;
     opacity: 0.6;
