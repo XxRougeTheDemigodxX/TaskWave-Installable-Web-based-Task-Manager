@@ -1,10 +1,10 @@
 ## TaskWave – Installable Task Management Web-App
 
-TaskWave is a modern, installable task management web app that helps users stay organized and productive — even without an internet connection.
+TaskWave is a modern, installable task management web app that helps users stay organized and productive — even offline.
 
-Users can create and schedule tasks, track progress, receive overdue reminders, and monitor weekly achievements through a clean and intuitive interface.
+Users can create and schedule tasks, assign priority levels (Low / Medium / High), add tags, and reorder tasks via drag-and-drop with persistent storage in IndexedDB. Advanced filtering and sorting by status, priority, and tag ensure efficient task management.
 
-Designed for both desktop and mobile, TaskWave delivers a smooth, reliable, app-like experience with smart filtering, real-time updates, optional notifications, and dark/light themes.
+Built as a Progressive Web App (PWA), TaskWave delivers a fast, responsive, app-like experience with real-time updates, overdue reminders, weekly progress tracking, optional notifications, and customizable dark/light themes.
 
 ---
 
@@ -24,13 +24,14 @@ Designed for both desktop and mobile, TaskWave delivers a smooth, reliable, app-
 - **Font Awesome**: Delivers scalable icons for actions like add, complete, delete, toggle, and install, enhancing visual clarity.  
 
 ### Logic & State Management
-- **JavaScript (ES Modules)**: Handles all client-side logic including task CRUD operations, filters, timers, theming, notifications, and animations in a modular structure (`app.js`, `filters.js`, `animations.js`, `pushNotificationsHandler.js`, `databaseManager.js`).  
+- **JavaScript (ES Modules)**: Handles all client-side logic including task CRUD operations, priority/tags, filtering and sorting (by status, priority, tag), drag-and-drop reordering, timers, theming, notifications, and animations in a modular structure (`app.js`, `filters.js`, `animations.js`, `pushNotificationsHandler.js`, `databaseManager.js`).  
 - **IndexedDB (`idb` wrapper)**: Stores tasks locally in a persistent object store, enabling offline functionality and data retention across sessions.  
 - **localStorage**: Saves user preferences such as theme (dark/light) and notification settings.  
 
 ### PWA & Browser APIs
 - **Service Worker (PWA)**: Caches assets, serves offline and 404 pages, and implements a network-first with cache-fallback strategy for robust performance.  
 - **Notifications API**: Sends optional browser notifications for overdue tasks, respecting user permissions.  
+- **HTML5 Drag and Drop API**: Powers manual task reordering via a grip handle; drag events and `DataTransfer` persist the new order to IndexedDB.  
 - **IntersectionObserver API**: Enables smooth scroll-reveal animations when elements enter the viewport.  
 
 ### Hosting
@@ -42,6 +43,9 @@ Designed for both desktop and mobile, TaskWave delivers a smooth, reliable, app-
 ## ✨ Key Features
 
 - **Task Creation & Scheduling**: Quickly add tasks with optional descriptions and flexible scheduling options.  
+- **Priority & Tags**: Set task **priority** (Low / Medium / High) and optional **tags** (e.g. Work, Personal) via an expandable “additional options” section; tasks display priority and tag badges in the list.  
+- **Filter & Sort by Priority / Tag**: Use advanced filters (toggle below the status pills) to filter by priority or by tag (text match), and sort by **Priority (High → Low)** or default order.  
+- **Drag-and-Drop Reordering**: Reorder tasks manually by dragging the **grip handle** on the left of each task; order is persisted in IndexedDB and respected when loading and filtering.  
 - **Status Management**: Automatically track tasks as **pending**, **completed**, or **overdue**, with clear visual indicators.  
 - **Smart Filters**: Instantly sort tasks by **All**, **Pending**, **Completed**, or **Overdue** to focus on what matters most.  
 - **Live Counters & Weekly Insights**: Real-time badges display total, pending, completed, and overdue tasks, alongside a “tasks completed this week” metric.  
@@ -90,7 +94,7 @@ Designed for both desktop and mobile, TaskWave delivers a smooth, reliable, app-
 
 - **Storage**: IndexedDB (`todoListDB_iti`, version `2`)
   - Store: `tasks` (keyPath: `id`)
-  - Main fields: `id`, `title`, `description?`, `endTime?`, `status` (`pending | completed | overdue`), `completedAt?`.
+  - Main fields: `id`, `title`, `description?`, `endTime?`, `status` (`pending | completed | overdue`), `completedAt?`, `priority?` (Low | Medium | High), `tags?` (array of strings), `order?` (number, for drag-and-drop ordering).
 - **Preferences**: `localStorage` (`theme`, `notificationsEnabled`)
 - **Backend**: None required – all data stays in the browser.
 
