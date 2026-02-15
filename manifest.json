@@ -2,7 +2,7 @@
 	"name": "To Do List",
 	"short_name": "To Do List",
 	"description": "To Do List",
-	"start_url": "/",
+	"start_url": "https://ahmed-maher77.github.io/TaskWave-Installable-Web-based-Task-Manager/",
     "id": "/",
 	"display": "standalone",
     "orientation": "portrait",
