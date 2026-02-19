@@ -80,7 +80,7 @@ body {
 
 /* headings */
 .fs-head1 {
-    font-size: clamp(2.9rem, 5.5vw, 4.2rem);
+    font-size: clamp(2.1rem, 5.5vw, 4.2rem);
     font-family: "Lobster Two", sans-serif;
     font-weight: 600;
 }
