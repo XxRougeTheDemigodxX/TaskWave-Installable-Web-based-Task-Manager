@@ -10,7 +10,7 @@ Built as a Progressive Web App (PWA), TaskWave delivers a fast, responsive, app-
 
 ## 🌐 Live Preview
 
-- 👀 **Watch Live Demo**: [https://ahmed-maher77.github.io/TaskWave-Installable-Web-based-Task-Manager/](https://ahmed-maher77.github.io/TaskWave-Installable-Web-based-Task-Manager/)
+👀 **Watch Live Demo**: [https://ahmed-maher77.github.io/TaskWave-Installable-Web-based-Task-Manager/](https://ahmed-maher77.github.io/TaskWave-Installable-Web-based-Task-Manager/)
 <!-- - 🎥 **Demo Video**: [Watch the Demo on LinkedIn]() -->
 
 ---
